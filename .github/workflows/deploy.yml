@@ -1,0 +1,78 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Worker
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install dependencies
+        run: |
+          cd worker
+          npm install
+          
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 'worker'
+          secrets: |
+            SUPABASE_URL
+            SUPABASE_SERVICE_KEY
+            JWT_SECRET
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+```
+
+### 5. Klicke auf **"Commit changes"**
+
+- Commit message: `Add GitHub Actions workflow`
+- **"Commit directly to the main branch"**
+- Klick **"Commit changes"**
+
+---
+
+## 🎯 Workflow starten
+
+**Jetzt automatisch:**
+
+1. Gehe zum **"Actions"** Tab (oben in deinem Repo)
+2. Du solltest sehen: **"Deploy to Cloudflare Workers"** läuft gerade
+3. Klick drauf um Details zu sehen
+4. Warte ~2 Minuten...
+
+**Falls nicht automatisch gestartet:**
+
+1. Actions Tab
+2. Links: **"Deploy to Cloudflare Workers"**
+3. Rechts: **"Run workflow"** → **"Run workflow"**
+
+---
+
+## ⏱️ Was passiert jetzt:
+```
+1. GitHub checkt Code aus ✓
+2. Installiert Node.js ✓
+3. Installiert Dependencies (npm install) ✓
+4. Deployed zu Cloudflare ✓
+5. Setzt Secrets ✓
