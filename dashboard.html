@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Charge Share - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .installation-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .installation-info strong {
+            color: #667eea;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(100, 116, 139, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">🎉</div>
+        <h1>Login erfolgreich!</h1>
+        <p style="color: #666; font-size: 1.1em; margin-bottom: 20px;">
+            Willkommen bei EV Charge Share V2.0
+        </p>
+
+        <div class="installation-info" id="installationInfo">
+            <strong>Deine Installation:</strong> <span id="installationId">Wird geladen...</span>
+        </div>
+
+        <div class="info-box">
+            <h3>📊 Phase 2 - Login fertig!</h3>
+            <p><strong>✅ Was funktioniert:</strong></p>
+            <ul style="margin-left: 20px; color: #666;">
+                <li>Login mit Installation-ID + Passwort</li>
+                <li>Session Management (7 Tage speichern)</li>
+                <li>Automatische Weiterleitung</li>
+                <li>Schönes, modernes Design</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>⏭️ Als Nächstes (Phase 3):</strong></p>
+            <ul style="margin-left: 20px; color: #666;">
+                <li>Echtes Dashboard mit Statistiken</li>
+                <li>Dynamische Parteien-Anzeige</li>
+                <li>Charts & Übersichten</li>
+                <li>"Als bezahlt markieren" Funktion</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button class="btn btn-secondary" onclick="logout()">Abmelden</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CHECK LOGIN
+        // ============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('ev_charge_session');
+            
+            if (!session) {
+                // Not logged in - redirect to login
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const sessionData = JSON.parse(session);
+                const expiresAt = new Date(sessionData.expires_at);
+                
+                // Check if session is still valid
+                if (expiresAt <= new Date()) {
+                    // Session expired - redirect to login
+                    localStorage.removeItem('ev_charge_session');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Show installation ID
+                document.getElementById('installationId').textContent = sessionData.installation_id;
+
+            } catch (e) {
+                console.error('Invalid session:', e);
+                localStorage.removeItem('ev_charge_session');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ============================================
+        // LOGOUT
+        // ============================================
+        function logout() {
+            if (confirm('Wirklich abmelden?')) {
+                localStorage.removeItem('ev_charge_session');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
